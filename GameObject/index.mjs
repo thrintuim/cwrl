@@ -3,4 +3,4 @@ class GameObject {
     }
 }
 
-module.exports = GameObject
+export { GameObject }

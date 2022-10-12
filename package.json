@@ -1,10 +1,11 @@
 {
   "name": "cwrl",
+  "type": "module",
   "version": "0.0.1",
   "description": "Backed for a game based on a certain other game about highways and big guns",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "author": "Doug Chappell",
   "license": "ISC",

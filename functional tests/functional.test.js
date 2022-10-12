@@ -7,8 +7,10 @@ Things to do with the 0.0.1 version of CWRL
     5. Objects are moved by updating the object on the gameboard
 */
 
-const GameBoard = require('../GameBoard/index.mjs')
-const GameObject = require('../GameObject/index.mjs')
+
+import { GameBoard } from '../GameBoard/index.mjs'
+import { GameObject } from '../GameObject/index.mjs'
+
 
 test('A game board should have thet dimensions specified', () => {
     const gb = new GameBoard({width: 100, height: 100})
@@ -24,7 +26,8 @@ test('No objects should be on the game board', () => {
 test('Adding an object should return an instance of it', () => {
     const gb = new GameBoard({width:100, height: 100})
     const go = new GameObject()
-    gb.addBoardObject(go)
+    newObject = gb.addBoardObject(go)
     expect(gb.boardObjects[0]).toBe(go)
-        expect(gb.boardObjects.length).toBe(1)
+    expect(newObject).toBe(go)
+    expect(gb.boardObjects.length).toBe(1)
 })
