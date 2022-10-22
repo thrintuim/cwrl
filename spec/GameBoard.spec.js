@@ -26,7 +26,7 @@ describe('GameBoard object instantiation', () => {
 describe('GameBoard add object method', () => {
     const gb = new GameBoard({width:100, height: 100})
     const go = {}
-    const newObject = gb.addBoardObject(go)
+    const newObject = gb.addObject(go)
     it("Should add the board object to the board objects property", () => {
         expect(gb.boardObjects[0]).toBe(go)
         expect(gb.boardObjects.length).toBe(1)
