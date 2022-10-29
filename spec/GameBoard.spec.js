@@ -25,14 +25,32 @@ describe('GameBoard object instantiation', () => {
 
 describe('GameBoard add object method', () => {
     const gb = new GameBoard({width:100, height: 100})
+    gb.entryPoints = []
     const go = {}
     const newObject = gb.addObject(go)
     it("Should add the board object to the board objects property", () => {
-        expect(gb.boardObjects[0]).toBe(go)
+        expect(gb.boardObjects[0]).toEqual(go)
         expect(gb.boardObjects.length).toBe(1)
     })
     it("should return the added board object", () => {
-        expect(newObject).toBe(go)
+        expect(newObject).toEqual(go)
     })
     
+})
+
+describe('Gameboard move object method', () => {
+    const gb = new GameBoard({width: 100, height: 100})
+    const go = {}
+    const newObject = gb.addObject(go)
+    const boardState = gb.moveObject(go, {x:20, y:20})
+
+    it("should return a board state that reflects that the object has moved", () => {
+        expect(boardState[0].x).toBe(20)
+        expect(boardState[0].y).toBe(20)
+    })
+
+    it("should also adjust the element in the boardObjects array", () => {
+        expect(gb.boardObjects[0].x).toBe(20)
+        expect(gb.boardObjects[0].y).toBe(20)
+    })
 })
