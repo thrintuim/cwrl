@@ -6,15 +6,44 @@ Things to do with the 0.0.1 version of CWRL
     4. Game board tracks the position of those objects
     5. Objects are moved by updating the object on the gameboard
 
-CWRL - 0.0.1
+CWRL - 0.0.1 - Initial Backend
 When I start the game a gameboard is initialized with a width and height
 No game objects are present.
 Game objects are loaded onto the game board
 Game objects are given some initial starting location
 When a game object is moved the board state is returned
 
-CWRL - 0.0.2
+CWRL - 0.0.2 - Initial front end
+I navigate to cwrl and am added as the first player
+In another tab I navigate to cwrl and I am added as the second player
+first and second player control an on screen object
+each player can move the object in the cardinal directions
+when an object moves the other player is updated about the new location of the object
 
+CWRL - 0.0.3 - Taking turns
+I navigate to cwrl and I am added as the first player
+In another tab I navigate to cwrl and I am added as the second player
+first player elects to start the game
+first and second player control an on screen object
+the object can be given a velocity
+the object can change orientation through a turn
+the players plot their move and then submit to the server
+plotting a move involves:
+    increasing or decreasing velocity
+    turning the object
+once both players have submitted their moves their boards are updated
+
+CWRL - 0.0.4 - Out of control
+I navigate to cwrl and I am added as the first player
+In another tab I navigate to cwrl and I am added as the second player
+first and second player control an on screen car
+the object can be given a velocity
+the object can be shown to turn
+the players plot their move and then submit to the server
+plotting a move involves:
+    increasing or decreasing velocity
+    turning the object
+once both players have submitted their moves their boards are updated
 
 CWRL - 0.1.0 - Amateur night - Player perspective
 A player decides to be the host and initializes the game/encounter

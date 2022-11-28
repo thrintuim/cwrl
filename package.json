@@ -10,6 +10,7 @@
   "author": "Doug Chappell",
   "license": "ISC",
   "dependencies": {
-    "jasmine": "^4.4.0"
+    "jasmine": "^4.4.0",
+    "ws": "^8.11.0"
   }
 }
