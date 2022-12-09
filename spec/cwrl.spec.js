@@ -1,5 +1,5 @@
 const { Builder, Browser, By, Key, until } = require('selenium-webdriver');
-const { default: CWRL } = require('./cwrl-app');
+const CWRL = require('./cwrl-app');
 require('dotenv').config()
 
 
@@ -32,7 +32,7 @@ describe('when a player moves their object the movement history for each player'
         expect((await player2.getMovementHistory()).split('\n').slice().pop()).toBe('player 2 object moved to (50, 99)')
     })
 
-    it('should reflect the moves made from the player in each players move history', async () => {
+    it('should reflect the moves made from the player in each players move history and on the boards', async () => {
         // To really test what is going on choose random moves and see if their reflected in the history for both players
         const directions = ['Left', 'Up', 'Right', 'Down']
         const threeMoves = [1,2,3].map((val, index) => {
@@ -55,6 +55,15 @@ describe('when a player moves their object the movement history for each player'
                     player1Coords.y += 1
                     break;
             }
+            const currentCoords = {...player1Coords}
+            const player1Object1 = await player1.getPlayerObject(1)
+            const player2Object1 = await player2.getPlayerObject(1)
+            expect(player1Object1).toBe(jasmine.anything())
+            expect(player2Object1).toBe(jasmine.anything())
+            expect(await player1Object1.getAttribute('x')).toBe(currentCoords.x)
+            expect(await player1Object1.getAttribute('y')).toBe(currentCoords.y)
+            expect(await player2Object1.getAttribute('x')).toBe(currentCoords.x)
+            expect(await player2Object1.getAttribute('y')).toBe(currentCoords.y)
             return {...player1Coords}
         })
         const player1MoveHistory = (await player1.getMovementHistory()).split('\n')
