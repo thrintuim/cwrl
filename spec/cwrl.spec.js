@@ -4,26 +4,32 @@ require('dotenv').config()
 
 
 
-const driver1 = new Builder().forBrowser(Browser.CHROME).build()
-const driver2 = new Builder().forBrowser(Browser.CHROME).build()
-const player1 = new CWRL(driver1)
-const player2 = new CWRL(driver2)
+
 describe(`domain for CWRL exists at ${process.env.HOST}`, () => {
-    it ('player 1 can navigate to the domain and not receive an error', async () => {
-        expect(await player1.navigateToCWRL()).toBe(true)
+    beforeEach(function() {
+        this.driver1 = new Builder().forBrowser(Browser.CHROME).build()
+        this.driver2 = new Builder().forBrowser(Browser.CHROME).build()
+        this.player1 = new CWRL(this.driver1)
+        this.player2 = new CWRL(this.driver2)
     })
-    it ('player 2 can navigate to the domain and not receive an error', async () => {
-        expect(await player2.navigateToCWRL()).toBe(true)
+    afterEach(function() {
+        this.driver1.quit()
+        this.driver2.quit()
+    })
+    it ('player 1 can navigate to the domain and not receive an error', async function() {
+        expect(await this.player1.navigateToCWRL()).toBe(true)
+    })
+    it ('player 2 can navigate to the domain and not receive an error', async function() {
+        expect(await this.player2.navigateToCWRL()).toBe(true)
     })
 })
 
 describe('when a player moves their object the movement history for each player', () => {
-    let player1Coords = {x: 50, y: 0}
+    
     it('should reflect that the player 1 object has been moved for all players', async () => {
         await player1.moveObject("Down")
         expect((await player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 object moved to (50, 1)')
         expect((await player2.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 object moved to (50, 1)')
-        player1Coords.y = 1
     })
 
     it('should reflect that the player 1 object has been moved for all players', async () => {
@@ -33,6 +39,7 @@ describe('when a player moves their object the movement history for each player'
     })
 
     it('should reflect the moves made from the player in each players move history and on the boards', async () => {
+        let player1Coords = {x: 50, y: 0}
         // To really test what is going on choose random moves and see if their reflected in the history for both players
         const directions = ['Left', 'Up', 'Right', 'Down']
         const threeMoves = [1,2,3].map((val, index) => {

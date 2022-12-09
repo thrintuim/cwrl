@@ -21,7 +21,7 @@ class CWRL {
      * @returns {Promise<bool>}
      */
     async navigateToCWRL() {
-        this.driver.get(this.url)
+        await this.driver.get(this.url)
         const title = await this.driver.getTitle()
         if (this.pageTitle !== title) {
             throw `Page title "${title}" doesn't match with expected title of "${this.pageTitle}"`
