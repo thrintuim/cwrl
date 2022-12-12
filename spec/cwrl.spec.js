@@ -1,21 +1,46 @@
 const { Builder, Browser, By, Key, until } = require('selenium-webdriver');
+const firefox = require('selenium-webdriver/firefox');
 const CWRL = require('./cwrl-app');
 require('dotenv').config()
+const fo = new firefox.Options().headless()
 
+/**
+ * intended to be called with .call inside of beforeEach
+ *  or passed directly to beforeEach
+ */
+function setUpDriversAndPlayers() {
+    this.driver1 = new Builder()
+        .forBrowser(Browser.CHROME)
+        .setFirefoxOptions(fo)
+        .build()
+    this.driver2 = new Builder()
+        .forBrowser(Browser.CHROME)
+        .setFirefoxOptions(fo)
+        .build()
+    this.player1 = new CWRL(this.driver1)
+    this.player2 = new CWRL(this.driver2)
+}
+
+/**
+ * intended to be passed to afterEach
+ */
+function tearDownDriversAndPlayers() {
+    this.driver1.quit()
+    this.driver2.quit()
+    this.player1 = null
+    this.player2 = null
+}
+
+async function navigateToCWRL() {
+    await this.player1.navigateToCWRL()
+    await this.player2.navigateToCWRL()
+}
 
 
 
 describe(`domain for CWRL exists at ${process.env.HOST}`, () => {
-    beforeEach(function() {
-        this.driver1 = new Builder().forBrowser(Browser.CHROME).build()
-        this.driver2 = new Builder().forBrowser(Browser.CHROME).build()
-        this.player1 = new CWRL(this.driver1)
-        this.player2 = new CWRL(this.driver2)
-    })
-    afterEach(function() {
-        this.driver1.quit()
-        this.driver2.quit()
-    })
+    beforeEach(setUpDriversAndPlayers)
+    afterEach(tearDownDriversAndPlayers)
     it ('player 1 can navigate to the domain and not receive an error', async function() {
         expect(await this.player1.navigateToCWRL()).toBe(true)
     })
@@ -24,21 +49,70 @@ describe(`domain for CWRL exists at ${process.env.HOST}`, () => {
     })
 })
 
+describe('when a player joins the game', () => {
+    beforeEach(setUpDriversAndPlayers)
+    afterEach(tearDownDriversAndPlayers)
+    it('the board should have only 1 object when player 1 joins', async function () {
+        await this.player1.navigateToCWRL()
+        expect(await this.player1.getPlayerObject(1)).toBe(jasmine.anything())
+        expect(await this.player1.getPlayerObject(2)).toBe(null)
+    })
+    it('the movement history should reflect their entry when player 1 joins', async function() {
+        await this.player1.navigateToCWRL()
+        expect((await this.player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 has joined at (50, 0)')
+    })
+
+    it('each player board should have 2 objects when player 2 joins', async function () {
+        await this.player1.navigateToCWRL()
+        await this.player2.navigateToCWRL()
+        expect(await this.player1.getPlayerObject(1)).toBe(jasmine.anything())
+        expect(await this.player1.getPlayerObject(2)).toBe(jasmine.anything())
+        expect(await this.player2.getPlayerObject(1)).toBe(jasmine.anything())
+        expect(await this.player2.getPlayerObject(2)).toBe(jasmine.anything())
+    })
+
+    it('the movement history should reflect their entry when each player joins', async function() {
+        await this.player1.navigateToCWRL()
+        await this.player2.navigateToCWRL()
+        const player1history = await this.player1.getMovementHistory()
+        expect(player1history).toBe(jasmine.anything())
+        if (player1history) {
+            const player1historyArray = player1history.split('\n')
+            expect(player1historyArray.length).toBe(2)
+            expect(player1historyArray[0]).toBe('player 1 has joined at (50, 0)')
+            expect(player1historyArray[1]).toBe('player 2 has joined at (50, 100)')
+        }
+        const player2history = await this.player1.getMovementHistory()
+        expect(player2history).toBe(jasmine.anything())
+        if (player2history) {
+            const player2historyArray = player2history.split('\n')
+            expect(player2historyArray.length).toBe(2)
+            expect(player2historyArray[0]).toBe('player 1 has joined at (50, 0)')
+            expect(player2historyArray[1]).toBe('player 2 has joined at (50, 100)')
+        }
+    })
+})
+
 describe('when a player moves their object the movement history for each player', () => {
+    beforeEach(async function() {
+        setUpDriversAndPlayers.call(this)
+        await navigateToCWRL.call(this)
+    })
+    afterEach(tearDownDriversAndPlayers)
     
-    it('should reflect that the player 1 object has been moved for all players', async () => {
-        await player1.moveObject("Down")
-        expect((await player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 object moved to (50, 1)')
-        expect((await player2.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 object moved to (50, 1)')
+    it('should reflect that the player 1 object has been moved for all players', async function () {
+        await this.player1.moveObject("Down")
+        expect((await this.player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 object moved to (50, 1)')
+        expect((await this.player2.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 object moved to (50, 1)')
     })
 
-    it('should reflect that the player 1 object has been moved for all players', async () => {
-        await player2.moveObject("Up")
-        expect((await player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 2 object moved to (50, 99)')
-        expect((await player2.getMovementHistory()).split('\n').slice().pop()).toBe('player 2 object moved to (50, 99)')
+    it('should reflect that the player 1 object has been moved for all players', async function () {
+        await this.player2.moveObject("Up")
+        expect((await this.player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 2 object moved to (50, 99)')
+        expect((await this.player2.getMovementHistory()).split('\n').slice().pop()).toBe('player 2 object moved to (50, 99)')
     })
 
-    it('should reflect the moves made from the player in each players move history and on the boards', async () => {
+    it('should reflect the moves made from the player in each players move history and on the boards', async function () {
         let player1Coords = {x: 50, y: 0}
         // To really test what is going on choose random moves and see if their reflected in the history for both players
         const directions = ['Left', 'Up', 'Right', 'Down']
@@ -47,7 +121,7 @@ describe('when a player moves their object the movement history for each player'
             return directions[dirIndex]
         })
         const player1History = threeMoves.map(async (dir) => {
-            await player1.moveObject(dir)
+            await this.player1.moveObject(dir)
             switch (dir) {
                 case 'Left':
                     player1Coords.x -= 1
@@ -63,8 +137,8 @@ describe('when a player moves their object the movement history for each player'
                     break;
             }
             const currentCoords = {...player1Coords}
-            const player1Object1 = await player1.getPlayerObject(1)
-            const player2Object1 = await player2.getPlayerObject(1)
+            const player1Object1 = await this.player1.getPlayerObject(1)
+            const player2Object1 = await this.player2.getPlayerObject(1)
             expect(player1Object1).toBe(jasmine.anything())
             expect(player2Object1).toBe(jasmine.anything())
             expect(await player1Object1.getAttribute('x')).toBe(currentCoords.x)
@@ -73,8 +147,8 @@ describe('when a player moves their object the movement history for each player'
             expect(await player2Object1.getAttribute('y')).toBe(currentCoords.y)
             return {...player1Coords}
         })
-        const player1MoveHistory = (await player1.getMovementHistory()).split('\n')
-        const player2MoveHistory = (await player2.getMovementHistory()).split('\n')
+        const player1MoveHistory = (await this.player1.getMovementHistory()).split('\n')
+        const player2MoveHistory = (await this.player2.getMovementHistory()).split('\n')
         const player1Last3Moves = player1MoveHistory.splice(player1MoveHistory.length - 4, player1MoveHistory - 1)
         const player2Last3Moves = player1MoveHistory.splice(player1MoveHistory.length - 4, player1MoveHistory - 1)
         expect(player1MoveHistory.length).toBe(player2MoveHistory.length)
