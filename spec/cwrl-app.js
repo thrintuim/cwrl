@@ -38,9 +38,15 @@ class CWRL {
      * @returns {Promise<WebElement>}
      */
     async moveObject(direction) {
-        const el = await this.driver.findElement(By.id(`move${direction}`))
+        try {
+            const el = await this.driver.findElement(By.id(`move${direction}`))
+        }
+        catch (error) {
+            return undefined
+        }
         await el.click()
         return el
+        
     }
 
     /**
@@ -49,7 +55,12 @@ class CWRL {
      * @returns {Promise<string>}
      */
     async getMovementHistory() {
-        const el = await this.driver.findElement(By.id("movementHistory"))
+        try {
+            const el = await this.driver.findElement(By.id("movementHistory"))
+        }
+        catch (error) {
+            return undefined
+        }
         const text = await el.getText()
         return text
     }
