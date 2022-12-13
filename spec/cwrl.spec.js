@@ -3,6 +3,9 @@ const firefox = require('selenium-webdriver/firefox');
 const CWRL = require('./cwrl-app');
 require('dotenv').config()
 const fo = new firefox.Options().headless()
+if (process.env.ENV_SPEED === "SLOW") {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000
+}
 
 /**
  * intended to be called with .call inside of beforeEach
