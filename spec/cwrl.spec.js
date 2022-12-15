@@ -80,18 +80,16 @@ describe('when a player joins the game', () => {
         const player1history = await this.player1.getMovementHistory()
         expect(player1history).toBe(jasmine.anything())
         if (player1history) {
-            const player1historyArray = player1history.split('\n')
-            expect(player1historyArray.length).toBe(2)
-            expect(player1historyArray[0]).toBe('player 1 has joined at (50, 0)')
-            expect(player1historyArray[1]).toBe('player 2 has joined at (50, 100)')
+            expect(player1history.length).toBe(2)
+            expect(player1history[0]).toBe('player 1 has joined at (50, 0)')
+            expect(player1history[1]).toBe('player 2 has joined at (50, 100)')
         }
         const player2history = await this.player1.getMovementHistory()
         expect(player2history).toBe(jasmine.anything())
         if (player2history) {
-            const player2historyArray = player2history.split('\n')
-            expect(player2historyArray.length).toBe(2)
-            expect(player2historyArray[0]).toBe('player 1 has joined at (50, 0)')
-            expect(player2historyArray[1]).toBe('player 2 has joined at (50, 100)')
+            expect(player2history.length).toBe(2)
+            expect(player2history[0]).toBe('player 1 has joined at (50, 0)')
+            expect(player2history[1]).toBe('player 2 has joined at (50, 100)')
         }
     })
 })
@@ -105,14 +103,14 @@ describe('when a player moves their object the movement history for each player'
     
     it('should reflect that the player 1 object has been moved for all players', async function () {
         await this.player1.moveObject("Down")
-        expect((await this.player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 object moved to (50, 1)')
-        expect((await this.player2.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 object moved to (50, 1)')
+        expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 1 object moved to (50, 1)')
+        expect((await this.player2.getMovementHistory()).slice().pop()).toBe('player 1 object moved to (50, 1)')
     })
 
     it('should reflect that the player 1 object has been moved for all players', async function () {
         await this.player2.moveObject("Up")
-        expect((await this.player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 2 object moved to (50, 99)')
-        expect((await this.player2.getMovementHistory()).split('\n').slice().pop()).toBe('player 2 object moved to (50, 99)')
+        expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 2 object moved to (50, 99)')
+        expect((await this.player2.getMovementHistory()).slice().pop()).toBe('player 2 object moved to (50, 99)')
     })
 
     it('should reflect the moves made from the player in each players move history and on the boards', async function () {
@@ -150,8 +148,8 @@ describe('when a player moves their object the movement history for each player'
             expect(await player2Object1.getAttribute('y')).toBe(currentCoords.y)
             return {...player1Coords}
         })
-        const player1MoveHistory = (await this.player1.getMovementHistory()).split('\n')
-        const player2MoveHistory = (await this.player2.getMovementHistory()).split('\n')
+        const player1MoveHistory = await this.player1.getMovementHistory()
+        const player2MoveHistory = await this.player2.getMovementHistory()
         const player1Last3Moves = player1MoveHistory.splice(player1MoveHistory.length - 4, player1MoveHistory - 1)
         const player2Last3Moves = player1MoveHistory.splice(player1MoveHistory.length - 4, player1MoveHistory - 1)
         expect(player1MoveHistory.length).toBe(player2MoveHistory.length)

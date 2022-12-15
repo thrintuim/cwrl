@@ -52,7 +52,7 @@ class CWRL {
     /**
      * Gets all of the text from the movement history panel
      * 
-     * @returns {Promise<string>}
+     * @returns {Promise<string[]>}
      */
     async getMovementHistory() {
         try {
@@ -62,7 +62,7 @@ class CWRL {
             return undefined
         }
         const text = await el.getText()
-        return text
+        return text.split('\n')
     }
 
     /**
