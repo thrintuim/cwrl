@@ -1,7 +1,7 @@
 import React from 'react'
 import Board from './Board'
 import Controls from './Controls'
-import History from './History'
+import Messages from './Messages'
 
 class CWRL extends React.Component {
     render(props) {
@@ -13,7 +13,7 @@ class CWRL extends React.Component {
 		<main>
 		    <Board />
 		    <Controls />
-		    <History />
+		    <Messages />
 		</main>
 	    </>
 	);
