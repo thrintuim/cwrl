@@ -4,31 +4,39 @@ import Heading from './Heading'
 
 class Messages extends React.Component {
     constructor(props) {
-	super(props)
-	this.state = {
-	    messages: ""
-	}
-	if (this.props.connection) {
-	    this.connection = new WebSocket(this.props.connection)
-	    this.connection.addEventListener('message', this.addHistory.bind(this))
-	}
+		super(props)
+		this.state = {
+			messages: ""
+		}
+	
     }
 
     addHistory(event) {
-	const msg = this.state.messages === "" ? event.data : '\n' + event.data
-	const newMessages = this.state.messages + msg
-	this.setState(
-	    {
-		messages: newMessages
-	    }
-	)
-	
+		const msg = this.state.messages === "" ? event.data : '\n' + event.data
+		const newMessages = this.state.messages + msg
+		this.setState(
+			{
+			messages: newMessages
+			}
+		)
     }
+
+	componentDidMount() {
+		this.mounted = true
+		if (this.props.connection) {
+			this.connection = new WebSocket(this.props.connection)
+			this.connection.addEventListener('message', this.addHistory.bind(this))
+		}
+	}
+
+	componentWillUnmount() {
+		this.connection.close()
+	}
     
     render() {
 	return (
 	    <div id={this.props.id}>
-		<Heading level={this.props.level} content={this.props.title} />
+		<Heading level={this.props.level} heading={this.props.title} />
 		{this.state.messages}
 	    </div>
 	)
