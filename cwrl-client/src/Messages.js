@@ -1,4 +1,5 @@
 import React from 'react'
+import Heading from './Heading'
 
 
 class Messages extends React.Component {
@@ -27,6 +28,7 @@ class Messages extends React.Component {
     render() {
 	return (
 	    <div id={this.props.id}>
+		<Heading level={this.props.level} content={this.props.title} />
 		{this.state.messages}
 	    </div>
 	)
