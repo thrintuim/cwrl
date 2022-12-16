@@ -13,7 +13,7 @@ class CWRL extends React.Component {
 		<main>
 		    <Board />
 		    <Controls />
-		    <Messages />
+		    <Messages title={"Movement History"}  level={2} id={"movementHistory"}/>
 		</main>
 	    </>
 	);

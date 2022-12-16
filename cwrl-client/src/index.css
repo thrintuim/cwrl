@@ -1,5 +1,4 @@
 body {
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -10,4 +9,37 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+main > svg {
+  width: 50%;
+  max-height: 30em; 
+  outline: solid thin;
+}
+
+main > div {
+  margin: 0.25em;
+  display: inline-block;
+  vertical-align: top;
+  width: 24%;
+  outline:solid thin;
+}
+
+main {
+  vertical-align: top;
+}
+
+@media screen and (max-width: 500px) {
+  main > #movementHistory {
+    display: block;
+    width: 100%;
+  }
+  main > #controls {
+    width: 40%;
+    clear: right;
+  }
+  main > svg {
+    width: 60%
+  }
+  
 }
