@@ -30,7 +30,9 @@ class Messages extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.connection.close()
+		if (this.connection) {
+			this.connection.close()
+		}
 	}
     
     render() {
