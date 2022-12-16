@@ -5,18 +5,18 @@ import Messages from './Messages'
 
 class CWRL extends React.Component {
     render(props) {
-	return (
-	    <>
-		<header>
-		    <h1>CWRL</h1>
-		</header>
-		<main>
-		    <Board />
-		    <Controls />
-		    <Messages title={"Movement History"}  level={2} id={"movementHistory"}/>
-		</main>
-	    </>
-	);
+		return (
+			<>
+			<header>
+				<h1>CWRL</h1>
+			</header>
+			<main>
+				<Board />
+				<Controls />
+				<Messages title={"Movement History"}  level={2} id={"movementHistory"}/>
+			</main>
+			</>
+		);
     }
 }
 
