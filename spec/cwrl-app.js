@@ -38,8 +38,9 @@ class CWRL {
      * @returns {Promise<WebElement>}
      */
     async moveObject(direction) {
+	let el = null
         try {
-            const el = await this.driver.findElement(By.id(`move${direction}`))
+            el = await this.driver.findElement(By.id(`move${direction}`))
         }
         catch (error) {
             return undefined
@@ -55,8 +56,9 @@ class CWRL {
      * @returns {Promise<string[]>}
      */
     async getMovementHistory() {
+	let el = null
         try {
-            const el = await this.driver.findElement(By.id("movementHistory"))
+            el = await this.driver.findElement(By.id("movementHistory"))
         }
         catch (error) {
             return undefined
@@ -72,8 +74,9 @@ class CWRL {
      * @returns {Promise<(WebElement|undefined)>} player object WebElement or undefined if it doesn't exist
      */
     async getPlayerObject(playerNumber) {
+	let el = null
         try {
-            const el = await this.driver.findElement(By.id(`player${playerNumber}Object`))
+            el = await this.driver.findElement(By.id(`player${playerNumber}Object`))
         } catch (error) {
             return undefined
         }

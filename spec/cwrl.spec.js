@@ -62,7 +62,7 @@ describe('when a player joins the game', () => {
     })
     it('the movement history should reflect their entry when player 1 joins', async function() {
         await this.player1.navigateToCWRL()
-        expect((await this.player1.getMovementHistory()).split('\n').slice().pop()).toBe('player 1 has joined at (50, 0)')
+        expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 1 has joined at (50, 0)')
     })
 
     it('each player board should have 2 objects when player 2 joins', async function () {
