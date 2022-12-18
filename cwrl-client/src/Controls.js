@@ -1,11 +1,13 @@
+import Heading from './Heading'
+
 function Controls (props) {
     return (
 	<div id="Controls">
-	    <h2>Controls</h2>
-		<button type="button">&#x2190;</button>
-		<button type="button">&#x2192;</button>
-		<button type="button">&#x2191;</button>
-		<button type="button">&#x2193;</button>
+	    <Heading level={2} heading={"Controls"} />
+	    <button type="button" onClick={props.handlers ? props.handlers.left : null} id="moveLeft">&#x2190;</button>
+	    <button type="button" onClick={props.handlers ? props.handlers.right : null} id="moveRight">&#x2192;</button>
+	    <button type="button" onClick={props.handlers ? props.handlers.up : null} id="moveUp">&#x2191;</button>
+	    <button type="button" onClick={props.handlers ? props.handlers.down : null} id="moveDown">&#x2193;</button>
 	</div>
     )
 }
