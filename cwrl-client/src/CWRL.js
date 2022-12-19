@@ -65,7 +65,7 @@ class CWRL extends React.Component {
 			</header>
 			<main>
 			    <Board
-					objects={this.gameObjects}
+					objects={this.state.gameObjects}
 					add={this.addObjects}
 			    />
 			    <Controls handlers={this.movementHandlers}/>
