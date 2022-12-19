@@ -6,14 +6,13 @@ class Messages extends React.Component {
     constructor(props) {
 		super(props)
 		this.state = {
-			messages: ""
+			messages: []
 		}
 	
     }
 
     addHistory(event) {
-		const msg = this.state.messages === "" ? event.data : '\n' + event.data
-		const newMessages = this.state.messages + msg
+		const newMessages = [...this.state.messages, event.data]
 		this.setState(
 			{
 			messages: newMessages
@@ -27,6 +26,17 @@ class Messages extends React.Component {
 			this.connection = new WebSocket(this.props.connection)
 			this.connection.addEventListener('message', this.addHistory.bind(this))
 		}
+		else {
+			this.setState({
+				messages: ["No connection to server"]
+			})
+		}
+	}
+
+	addMessages() {
+		return this.state.messages.map((message, index) => {
+			return (<p key={index}>{message}</p>)
+		})
 	}
 
 	componentWillUnmount() {
@@ -38,8 +48,8 @@ class Messages extends React.Component {
     render() {
 	return (
 	    <div id={this.props.id}>
-		<Heading level={this.props.level} heading={this.props.title} />
-		{this.state.messages}
+			<Heading level={this.props.level} heading={this.props.title} />
+			{this.addMessages()}
 	    </div>
 	)
     }

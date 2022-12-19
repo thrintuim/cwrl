@@ -19,7 +19,7 @@ test('renders Messages component without error', () => {
   expect(renderMessages).not.toThrow()
 });
 
-test('when msg is passed as a prop the value is displayed', async () => {
+test('when a message is sent by the connection it is displayed', async () => {
     render(<Messages connection={connection} />)
     act(() => {
 	wss.on('connection', (ws) => {
@@ -29,12 +29,12 @@ test('when msg is passed as a prop the value is displayed', async () => {
     const el = await screen.findByText(/Howdy!/i)
     expect(el).toBeDefined()
     act(() => {
-	wss.clients.forEach((client) => {
+	    wss.clients.forEach((client) => {
 	    client.send('another piece of text')
 	})
     })
     const el2 = await screen.findByText(/another/i)
     expect(el2).toBeDefined()
-    expect(el).toBe(el2)
-    expect(el2.innerHTML.split('\n').length).toBe(2)
+    expect(el2.innerHTML).toBe("another piece of text")
+    expect(el2.previousElementSibling).toBe(el)
 })
