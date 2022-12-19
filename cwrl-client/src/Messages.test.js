@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { act } from 'react-dom/test-utils'
 import Messages from './Messages'
 import { WebSocketServer } from 'ws'
@@ -36,5 +36,9 @@ test('when a message is sent by the connection it is displayed', async () => {
     const el2 = await screen.findByText(/another/i)
     expect(el2).toBeDefined()
     expect(el2.innerHTML).toBe("another piece of text")
-    expect(el2.previousElementSibling).toBe(el)
+    const el3 = await screen.findByRole("log")
+    const messages = await within(el3).findAllByText(/(?:Howdy!|another)/i)
+    expect(messages[0]).toBe(el)
+    expect(messages[1]).toBe(el2)
+
 })

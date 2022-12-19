@@ -47,7 +47,7 @@ class Messages extends React.Component {
     
     render() {
 	return (
-	    <div id={this.props.id}>
+	    <div id={this.props.id} role="log">
 			<Heading level={this.props.level} heading={this.props.title} />
 			{this.addMessages()}
 	    </div>
