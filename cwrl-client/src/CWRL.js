@@ -7,7 +7,10 @@ class CWRL extends React.Component {
     constructor(props) {
 		super(props)
 		this.state = {
-			gameObjects: []
+			// Usually get objects from WebSocket connection.
+			// Passing objects as props allows to test movement handlers
+			// 	without server connection
+			gameObjects: props.objects ? props.objects : []
 		}
 		this.movementHandlers = {
 			left: this.handleMove.bind(this, "left"),
