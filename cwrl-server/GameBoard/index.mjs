@@ -29,4 +29,4 @@ class GameBoard {
     }
 }
 
-export { GameBoard }
+export default GameBoard
