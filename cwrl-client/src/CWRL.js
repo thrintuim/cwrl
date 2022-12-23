@@ -20,6 +20,35 @@ class CWRL extends React.Component {
 		}
     }
 
+	componentDidMount() {
+		this.serverConnection = new WebSocket(`ws://${window.location.host}/game`)
+		this.serverConnection.addEventListener('message', this.updateObject.bind(this))
+	}
+	componentWillUnmount() {
+		this.serverConnection.close()
+	}
+
+	/**
+	 * 
+	 * @param {MessageEvent} evt 
+	 */
+	updateObject(evt) {
+		const objectData = JSON.parse(evt.data)
+		if (Array.isArray(objectData)) {
+			this.setState({
+				gameObjects: objectData
+			})
+			return true
+		}
+		const findPlayerObject = this.state.gameObjects.filter((el) => el.player === objectData.player)
+		const toUpdate = findPlayerObject.length ? {} : findPlayerObject[0]
+		const toLeave = this.state.gameObjects.filter((el) => el.player !== objectData.player)
+		const updatedObject = Object.assign({}, toUpdate, objectData)
+		this.setState({
+			gameObjects: [updatedObject, ...toLeave]
+		})
+	}
+
     handleMove(direction) {
 		const activeObj = this.state.gameObjects.filter((el) => el.active)[0]
 		const inactiveObjects = this.state.gameObjects.filter((el) => !el.active)
@@ -39,6 +68,8 @@ class CWRL extends React.Component {
 			default:
 				break
 		}
+		const toSend = JSON.stringify(activeObj)
+		this.serverConnection.send(toSend)
 		this.setState({
 			gameObjects: [activeObj, ...inactiveObjects]
 		})
@@ -76,6 +107,7 @@ class CWRL extends React.Component {
 					title={"Movement History"}
 					level={2}
 					id={"movementHistory"}
+					connection={`ws://${window.location.host}/moveLog`}
 			    />
 			</main>
 			</>
