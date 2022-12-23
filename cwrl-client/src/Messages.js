@@ -11,8 +11,14 @@ class Messages extends React.Component {
 	
     }
 
+	/**Sets message state to received messages
+	 * 
+	 * ASSUMPTION: messages will always be in a stringified
+	 * 	array
+	 * 
+	 * @param {MessageEvent} event 
+	 */
     addHistory(event) {
-		
 		const newMessages = JSON.parse(event.data)
 		this.setState(
 			{
@@ -21,8 +27,10 @@ class Messages extends React.Component {
 		)
     }
 
+	/**Connect to message server or display the lack of connection.
+	 * 
+	 */
 	componentDidMount() {
-		this.mounted = true
 		if (this.props.connection) {
 			this.connection = new WebSocket(this.props.connection)
 			this.connection.addEventListener('message', this.addHistory.bind(this))
@@ -34,12 +42,19 @@ class Messages extends React.Component {
 		}
 	}
 
+	/** Add messages to message area
+	 * 
+	 * @returns {React.ElementType[]}
+	 */
 	addMessages() {
 		return this.state.messages.slice().reverse().map((message, index) => {
 			return (<p key={index}>{message}</p>)
 		})
 	}
 
+	/** Connection upon destruction
+	 * 
+	 */
 	componentWillUnmount() {
 		if (this.connection) {
 			this.connection.close()
