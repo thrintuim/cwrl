@@ -23,14 +23,14 @@ test('when a message is sent by the connection it is displayed', async () => {
     render(<Messages connection={connection} />)
     act(() => {
 	wss.on('connection', (ws) => {
-	    ws.send('Howdy!')
+	    ws.send(JSON.stringify(['Howdy!']))
 	})
     })
     const el = await screen.findByText(/Howdy!/i)
     expect(el).toBeDefined()
     act(() => {
 	    wss.clients.forEach((client) => {
-	    client.send('another piece of text')
+	    client.send(JSON.stringify(['another piece of text','Howdy!']))
 	})
     })
     const el2 = await screen.findByText(/another/i)
