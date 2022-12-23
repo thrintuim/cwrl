@@ -19,8 +19,8 @@ describe('GameStateServer update players', () => {
         gss.players.add(this.player2)
         gss.players.add(this.player3)
         const obj = {things: "stuff"}
-        const activeObject = Object.assign({}, obj, {active: true})
-        const inactiveObject = Object.assign({}, obj, {active: false})
+        const activeObject = JSON.stringify(Object.assign({}, obj, {active: true}))
+        const inactiveObject = JSON.stringify(Object.assign({}, obj, {active: false}))
         gss.updatePlayers(this.player1, obj)
         expect(this.player1.send).toHaveBeenCalledWith(activeObject)
         expect(this.player2.send).toHaveBeenCalledWith(inactiveObject)
