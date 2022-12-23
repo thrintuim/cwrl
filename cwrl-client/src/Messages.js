@@ -12,7 +12,8 @@ class Messages extends React.Component {
     }
 
     addHistory(event) {
-		const newMessages = [...this.state.messages, event.data]
+		
+		const newMessages = JSON.parse(event.data)
 		this.setState(
 			{
 			messages: newMessages
@@ -34,7 +35,7 @@ class Messages extends React.Component {
 	}
 
 	addMessages() {
-		return this.state.messages.map((message, index) => {
+		return this.state.messages.slice().reverse().map((message, index) => {
 			return (<p key={index}>{message}</p>)
 		})
 	}
