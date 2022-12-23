@@ -1,4 +1,4 @@
-import { GameBoard } from '../GameBoard/index.mjs'
+import GameBoard from '../GameBoard/index.mjs'
 
 describe('cwrl 0.0.1 game initialization', () => {
     const gb = new GameBoard( { width: 100, height: 100 } )
