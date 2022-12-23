@@ -84,7 +84,7 @@ describe('when a player joins the game', () => {
             expect(player1history[0]).toBe('player 1 has joined at (50, 0)')
             expect(player1history[1]).toBe('player 2 has joined at (50, 100)')
         }
-        const player2history = await this.player1.getMovementHistory()
+        const player2history = await this.player2.getMovementHistory()
         expect(player2history).toEqual(jasmine.anything())
         if (player2history) {
             expect(player2history.length).toBe(2)
