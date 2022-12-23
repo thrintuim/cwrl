@@ -57,8 +57,8 @@ describe('when a player joins the game', () => {
     afterEach(tearDownDriversAndPlayers)
     it('the board should have only 1 object when player 1 joins', async function () {
         await this.player1.navigateToCWRL()
-        expect(await this.player1.getPlayerObject(1)).toBe(jasmine.anything())
-        expect(await this.player1.getPlayerObject(2)).toBe(null)
+        expect(await this.player1.getPlayerObject(1)).toEqual(jasmine.anything())
+        expect(await this.player1.getPlayerObject(2)).toBe(undefined)
     })
     it('the movement history should reflect their entry when player 1 joins', async function() {
         await this.player1.navigateToCWRL()
@@ -68,24 +68,24 @@ describe('when a player joins the game', () => {
     it('each player board should have 2 objects when player 2 joins', async function () {
         await this.player1.navigateToCWRL()
         await this.player2.navigateToCWRL()
-        expect(await this.player1.getPlayerObject(1)).toBe(jasmine.anything())
-        expect(await this.player1.getPlayerObject(2)).toBe(jasmine.anything())
-        expect(await this.player2.getPlayerObject(1)).toBe(jasmine.anything())
-        expect(await this.player2.getPlayerObject(2)).toBe(jasmine.anything())
+        expect(await this.player1.getPlayerObject(1)).toEqual(jasmine.anything())
+        expect(await this.player1.getPlayerObject(2)).toEqual(jasmine.anything())
+        expect(await this.player2.getPlayerObject(1)).toEqual(jasmine.anything())
+        expect(await this.player2.getPlayerObject(2)).toEqual(jasmine.anything())
     })
 
     it('the movement history should reflect their entry when each player joins', async function() {
         await this.player1.navigateToCWRL()
         await this.player2.navigateToCWRL()
         const player1history = await this.player1.getMovementHistory()
-        expect(player1history).toBe(jasmine.anything())
+        expect(player1history).toEqual(jasmine.anything())
         if (player1history) {
             expect(player1history.length).toBe(2)
             expect(player1history[0]).toBe('player 1 has joined at (50, 0)')
             expect(player1history[1]).toBe('player 2 has joined at (50, 100)')
         }
         const player2history = await this.player1.getMovementHistory()
-        expect(player2history).toBe(jasmine.anything())
+        expect(player2history).toEqual(jasmine.anything())
         if (player2history) {
             expect(player2history.length).toBe(2)
             expect(player2history[0]).toBe('player 1 has joined at (50, 0)')
