@@ -98,10 +98,9 @@ class CWRL extends React.Component {
 				<h1>CWRL</h1>
 			</header>
 			<main>
-			    <Board
-					objects={this.state.gameObjects}
-					add={this.addObjects}
-			    />
+			    <Board>
+					{this.state.gameObjects.map(this.addObjects)}
+				</Board>
 			    <Controls handlers={this.movementHandlers}/>
 			    <Messages
 					title={"Movement History"}
