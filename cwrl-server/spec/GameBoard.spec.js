@@ -8,7 +8,7 @@ Things to do with the 0.0.1 version of CWRL
 */
 
 
-import { GameBoard } from '../GameBoard/index.mjs'
+import GameBoard from '../GameBoard/index.mjs'
 
 
 describe('GameBoard object instantiation', () => {
