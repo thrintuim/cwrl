@@ -56,15 +56,15 @@ class CWRL {
      * @returns {Promise<string[]>}
      */
     async getMovementHistory() {
-	let el = null
+	    let els = null
         try {
-            el = await this.driver.findElement(By.id("movementHistory"))
+            els = await this.driver.findElements(By.css("#movementHistory p"))
         }
         catch (error) {
             return undefined
         }
-        const text = await el.getText()
-        return text.split('\n')
+        const textArray = els.map(async (el) => { return await el.getText() })
+        return await Promise.all(textArray)
     }
 
     /**
@@ -76,7 +76,7 @@ class CWRL {
     async getPlayerObject(playerNumber) {
 	let el = null
         try {
-            el = await this.driver.findElement(By.id(`player${playerNumber}Object`))
+            el = await this.driver.findElement(By.id(`player${playerNumber}`))
         } catch (error) {
             return undefined
         }
