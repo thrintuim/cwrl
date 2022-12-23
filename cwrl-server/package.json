@@ -1,11 +1,12 @@
 {
-  "name": "cwrl",
+  "name": "cwrl-server",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Backend for a game based on a certain other game about highways and big guns",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "start": "node index.js"
   },
   "author": "Doug Chappell",
   "license": "ISC",
