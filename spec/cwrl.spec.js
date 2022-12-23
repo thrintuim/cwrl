@@ -1,8 +1,15 @@
 const { Builder, Browser, By, Key, until } = require('selenium-webdriver');
+const { WebSocket } = require('ws')
 const firefox = require('selenium-webdriver/firefox');
+const chrome = require('selenium-webdriver/chrome');
 const CWRL = require('./cwrl-app');
 require('dotenv').config()
+function sleep(t) {
+    return new Promise((resolve) => setTimeout(resolve, t))
+}
+
 const fo = new firefox.Options().headless()
+const co = new chrome.Options().headless()
 if (process.env.ENV_SPEED === "SLOW") {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000
 }
@@ -15,10 +22,12 @@ function setUpDriversAndPlayers() {
     this.driver1 = new Builder()
         .forBrowser(Browser.CHROME)
         .setFirefoxOptions(fo)
+        .setChromeOptions()
         .build()
     this.driver2 = new Builder()
         .forBrowser(Browser.CHROME)
         .setFirefoxOptions(fo)
+        .setChromeOptions()
         .build()
     this.player1 = new CWRL(this.driver1)
     this.player2 = new CWRL(this.driver2)
@@ -27,11 +36,16 @@ function setUpDriversAndPlayers() {
 /**
  * intended to be passed to afterEach
  */
-function tearDownDriversAndPlayers() {
-    this.driver1.quit()
-    this.driver2.quit()
+async function tearDownDriversAndPlayers() {
+    await this.driver1.quit()
+    await this.driver2.quit()
     this.player1 = null
     this.player2 = null
+    const url = `ws://${process.env.HOST || 'localhost'}:${process.env.PORT || '3000'}/reset`
+    const ws = new WebSocket(url)
+    ws.on('error', (err) => { })
+    // Wait for the websocket to send the handshake request
+    await sleep(500)
 }
 
 async function navigateToCWRL() {
