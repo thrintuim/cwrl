@@ -109,25 +109,29 @@ describe('when a player joins the game', () => {
 })
 
 describe('when a player moves their object the movement history for each player', () => {
-    beforeEach(async function() {
-        setUpDriversAndPlayers.call(this)
-        await navigateToCWRL.call(this)
-    })
+    beforeEach(setUpDriversAndPlayers)
     afterEach(tearDownDriversAndPlayers)
     
     it('should reflect that the player 1 object has been moved for all players', async function () {
+        await this.player1.navigateToCWRL()
+        await this.player2.navigateToCWRL()
         await this.player1.moveObject("Down")
         expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 1 object moved to (50, 1)')
         expect((await this.player2.getMovementHistory()).slice().pop()).toBe('player 1 object moved to (50, 1)')
     })
 
-    it('should reflect that the player 1 object has been moved for all players', async function () {
+    it('should reflect that the player 2 object has been moved for all players', async function () {
+        await this.player1.navigateToCWRL()
+        await this.player2.navigateToCWRL()
+
         await this.player2.moveObject("Up")
         expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 2 object moved to (50, 99)')
         expect((await this.player2.getMovementHistory()).slice().pop()).toBe('player 2 object moved to (50, 99)')
     })
 
     it('should reflect the moves made from the player in each players move history and on the boards', async function () {
+        await this.player1.navigateToCWRL()
+        await this.player2.navigateToCWRL()
         let player1Coords = {x: 50, y: 0}
         // To really test what is going on choose random moves and see if their reflected in the history for both players
         const directions = ['Left', 'Up', 'Right', 'Down']
@@ -135,7 +139,8 @@ describe('when a player moves their object the movement history for each player'
             const dirIndex = Math.round(Math.random() * 3)
             return directions[dirIndex]
         })
-        const player1History = threeMoves.map(async (dir) => {
+        const player1History = []
+        for (const dir of threeMoves) {
             await this.player1.moveObject(dir)
             switch (dir) {
                 case 'Left':
@@ -151,22 +156,23 @@ describe('when a player moves their object the movement history for each player'
                     player1Coords.y += 1
                     break;
             }
-            const currentCoords = {...player1Coords}
-            const player1Object1 = await this.player1.getPlayerObject(1)
-            const player2Object1 = await this.player2.getPlayerObject(1)
-            expect(player1Object1).toBe(jasmine.anything())
-            expect(player2Object1).toBe(jasmine.anything())
-            expect(await player1Object1.getAttribute('x')).toBe(currentCoords.x)
-            expect(await player1Object1.getAttribute('y')).toBe(currentCoords.y)
-            expect(await player2Object1.getAttribute('x')).toBe(currentCoords.x)
-            expect(await player2Object1.getAttribute('y')).toBe(currentCoords.y)
-            return {...player1Coords}
-        })
+            let currentCoords = {...player1Coords}
+            let player1Object1 = await this.player1.getPlayerObject(1)
+            let player2Object1 = await this.player2.getPlayerObject(1)
+            expect(player1Object1).toEqual(jasmine.anything())
+            expect(player2Object1).toEqual(jasmine.anything())
+            expect(await player1Object1.getAttribute('x')).toBe(`${currentCoords.x}`)
+            expect(await player1Object1.getAttribute('y')).toBe(`${currentCoords.y}`)
+            expect(await player2Object1.getAttribute('x')).toBe(`${currentCoords.x}`)
+            expect(await player2Object1.getAttribute('y')).toBe(`${currentCoords.y}`)
+            player1History.push({...currentCoords})
+        }
         const player1MoveHistory = await this.player1.getMovementHistory()
         const player2MoveHistory = await this.player2.getMovementHistory()
-        const player1Last3Moves = player1MoveHistory.splice(player1MoveHistory.length - 4, player1MoveHistory - 1)
-        const player2Last3Moves = player1MoveHistory.splice(player1MoveHistory.length - 4, player1MoveHistory - 1)
-        expect(player1MoveHistory.length).toBe(player2MoveHistory.length)
+        const player1Last3Moves = player1MoveHistory.slice(player1MoveHistory.length - 3)
+        const player2Last3Moves = player2MoveHistory.slice(player2MoveHistory.length - 3)
+        expect(player1MoveHistory).toHaveSize(5)
+        expect(player1MoveHistory.length).toEqual(player2MoveHistory.length)
         player1History.forEach((entry, index) => {
             const msg = `player 1 object moved to (${entry.x}, ${entry.y})`
             expect(player1Last3Moves[index]).toBe(msg)
