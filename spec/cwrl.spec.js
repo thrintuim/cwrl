@@ -23,7 +23,6 @@ function setUpDriversAndPlayers() {
         .forBrowser(Browser.CHROME)
         .setFirefoxOptions(fo)
         .setChromeOptions()
-        .build()
     this.driver2 = new Builder()
         .forBrowser(Browser.CHROME)
         .setFirefoxOptions(fo)
@@ -178,5 +177,54 @@ describe('when a player moves their object the movement history for each player'
             expect(player1Last3Moves[index]).toBe(msg)
             expect(player2Last3Moves[index]).toBe(msg)
         })
+    })
+})
+
+describe('When more than four players join', () => {
+    beforeEach(async function() {
+	this.drivers = [1,2,3,4,5,6].map(() => {
+	    return new Builder()
+            .forBrowser(Browser.CHROME)
+            .setFirefoxOptions(fo)
+            .setChromeOptions()
+	})
+	this.players = this.drivers.map((driver) => {
+	    return new CWRL(driver)
+	})
+	for (const player of players) {
+	    await player.navigateToCWRL()
+	}
+    })
+    afterEach(async function() {
+	const closingBrowser = this.drivers.map((driver) => {
+	    return driver.quit()
+	})
+	await Promise.all(closingBrowser)
+	this.players = null
+	const url = `ws://${process.env.HOST || 'localhost'}:${process.env.PORT || '3000'}/reset`
+	const ws = new WebSocket(url)
+	ws.on('error', (err) => { })
+	// Wait for the websocket to send the handshake request
+	await sleep(500)
+    })
+
+    it ('the first 4 players should have objects', async function () {
+	const player1 = this.players[0]
+	const msgs = await player1.getMovementHistory()
+	const playerJoin = new RegExp(/player \d+ joined/)
+	const joins = msgs.filter(msg => playerJoin.test(msg))
+	expect(joins).toHaveSize(4)
+	expect(player1.getPlayerObject(1)).toExist()
+	expect(player1.getPlayerObject(2)).toExist()
+	expect(player1.getPlayerObject(3)).toExist()
+	expect(player1.getPlayerObject(4)).toExist()
+    })
+    it ('the other players should be marked as observers', async function () {
+	const player1 = this.players[0]
+	const msgs = await player1.getMovementHistory()
+	const observerJoin = new RegExp(/observer \d+ joined/)
+	const joins = msgs.filter(msg => observerJoin.test(msg))
+	expect(joins).toHaveSize(2)
+	
     })
 })
