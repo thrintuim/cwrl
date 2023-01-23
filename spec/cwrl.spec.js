@@ -23,6 +23,7 @@ function setUpDriversAndPlayers() {
         .forBrowser(Browser.CHROME)
         .setFirefoxOptions(fo)
         .setChromeOptions()
+	.build()
     this.driver2 = new Builder()
         .forBrowser(Browser.CHROME)
         .setFirefoxOptions(fo)
@@ -184,14 +185,15 @@ describe('When more than four players join', () => {
     beforeEach(async function() {
 	this.drivers = [1,2,3,4,5,6].map(() => {
 	    return new Builder()
-            .forBrowser(Browser.CHROME)
-            .setFirefoxOptions(fo)
-            .setChromeOptions()
+		.forBrowser(Browser.CHROME)
+		.setFirefoxOptions(fo)
+		.setChromeOptions()
+		.build()
 	})
 	this.players = this.drivers.map((driver) => {
 	    return new CWRL(driver)
 	})
-	for (const player of players) {
+	for (const player of this.players) {
 	    await player.navigateToCWRL()
 	}
     })
