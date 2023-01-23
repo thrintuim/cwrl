@@ -12,6 +12,9 @@ class CWRL extends React.Component {
 			// 	without server connection
 			gameObjects: props.objects ? props.objects : []
 		}
+	this.stateSync = {
+	    gameObjects: this.state.gameObjects
+	}
 		this.movementHandlers = {
 			left: this.handleMove.bind(this, "left"),
 			right: this.handleMove.bind(this, "right"),
@@ -34,24 +37,26 @@ class CWRL extends React.Component {
 	 */
 	updateObject(evt) {
 		const objectData = JSON.parse(evt.data)
-		if (Array.isArray(objectData)) {
+	    if (Array.isArray(objectData)) {
+		this.stateSync.gameObjects = objectData
 			this.setState({
-				gameObjects: objectData
+				gameObjects: this.stateSync.gameObjects
 			})
 			return true
 		}
-		const findPlayerObject = this.state.gameObjects.filter((el) => el.player === objectData.player)
+		const findPlayerObject = this.stateSync.gameObjects.filter((el) => el.player === objectData.player)
 		const toUpdate = findPlayerObject.length ? {} : findPlayerObject[0]
-		const toLeave = this.state.gameObjects.filter((el) => el.player !== objectData.player)
-		const updatedObject = Object.assign({}, toUpdate, objectData)
+		const toLeave = this.stateSync.gameObjects.filter((el) => el.player !== objectData.player)
+	    const updatedObject = Object.assign({}, toUpdate, objectData)
+	    this.stateSync.gameObjects = [updatedObject, ...toLeave]
 		this.setState({
-			gameObjects: [updatedObject, ...toLeave]
+			gameObjects: this.stateSync.gameObjects
 		})
 	}
 
     handleMove(direction) {
-		const activeObj = this.state.gameObjects.filter((el) => el.active)[0]
-		const inactiveObjects = this.state.gameObjects.filter((el) => !el.active)
+		const activeObj = this.stateSync.gameObjects.filter((el) => el.active)[0]
+		const inactiveObjects = this.stateSync.gameObjects.filter((el) => !el.active)
 		switch (direction) {
 			case "left":
 				activeObj.x -= 1
@@ -69,9 +74,10 @@ class CWRL extends React.Component {
 				break
 		}
 		const toSend = JSON.stringify(activeObj)
-		this.serverConnection.send(toSend)
+	this.serverConnection.send(toSend)
+	this.stateSync.gameObjects = [activeObj, ...inactiveObjects]
 		this.setState({
-			gameObjects: [activeObj, ...inactiveObjects]
+			gameObjects: this.stateSync.gameObjects
 		})
     }
 
