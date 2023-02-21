@@ -27,23 +27,23 @@ gss.on('connection', function (ws) {
     ws.on('error', function (stuff) {
     })
     if (this.players.size < maxPlayers) {
-    this.players.add(ws)
-    ws.player = this.players.size
-    const existingPlayerObject = gb.boardObjects.filter((obj) => obj.player === ws.player)
-    const playerObject = existingPlayerObject.length ? existingPlayerObject[0] : gb.addObject({player: ws.player})
-    ws.send(JSON.stringify(gb.boardObjects))
-    this.updatePlayers(ws, playerObject)
-    ms.addMessage(`player ${ws.player} has joined at (${playerObject.x}, ${playerObject.y})`)
-    ms.broadcast()
-    ws.on('message', function (evt) {
-        const objUpdate = JSON.parse(evt)
-        gss.updatePlayers(this, objUpdate)
-        ms.addMessage(`player ${this.player} object moved to (${objUpdate.x}, ${objUpdate.y})`)
+        this.players.add(ws)
+        ws.player = this.players.size
+        const existingPlayerObject = gb.boardObjects.filter((obj) => obj.player === ws.player)
+        const playerObject = existingPlayerObject.length ? existingPlayerObject[0] : gb.addObject({player: ws.player})
+        ws.send(JSON.stringify(gb.boardObjects))
+        this.updatePlayers(ws, playerObject)
+        ms.addMessage(`player ${ws.player} has joined at (${playerObject.x}, ${playerObject.y})`)
         ms.broadcast()
-    })
+        ws.on('message', function (evt) {
+            const objUpdate = JSON.parse(evt)
+            gss.updatePlayers(this, objUpdate)
+            ms.addMessage(`player ${this.player} object moved to (${objUpdate.x}, ${objUpdate.y})`)
+            ms.broadcast()
+        })
     }
     else {
-	ws.close()
+	    ws.close()
     }
 })
 
