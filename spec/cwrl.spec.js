@@ -11,7 +11,7 @@ function sleep(t) {
 const fo = new firefox.Options().headless()
 const co = new chrome.Options().headless()
 if (process.env.ENV_SPEED === "SLOW") {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000
 }
 
 /**
@@ -52,7 +52,6 @@ async function navigateToCWRL() {
     await this.player1.navigateToCWRL()
     await this.player2.navigateToCWRL()
 }
-
 
 
 describe(`domain for CWRL exists at ${process.env.HOST}`, () => {
@@ -213,18 +212,21 @@ describe('When more than four players join', () => {
     it ('the first 4 players should have objects', async function () {
 	const player1 = this.players[0]
 	const msgs = await player1.getMovementHistory()
-	const playerJoin = new RegExp(/player \d+ joined/)
+	const playerJoin = new RegExp(/player \d+ has joined/)
 	const joins = msgs.filter(msg => playerJoin.test(msg))
 	expect(joins).toHaveSize(4)
-	expect(player1.getPlayerObject(1)).toExist()
-	expect(player1.getPlayerObject(2)).toExist()
-	expect(player1.getPlayerObject(3)).toExist()
-	expect(player1.getPlayerObject(4)).toExist()
+	const playerObjectPromises = [1, 2, 3, 4].map( playerNum => player1.getPlayerObject(playerNum) )
+	const playerObjects = await Promise.all(playerObjectPromises)
+	let playerNum = 1
+	for (const playerObject of playerObjects) {
+	    expect(playerObject).withContext(`player ${playerNum}`).toEqual(jasmine.anything())
+	    playerNum++
+	}
     })
     it ('the other players should be marked as observers', async function () {
 	const player1 = this.players[0]
 	const msgs = await player1.getMovementHistory()
-	const observerJoin = new RegExp(/observer \d+ joined/)
+	const observerJoin = new RegExp(/observer \d+ has joined/)
 	const joins = msgs.filter(msg => observerJoin.test(msg))
 	expect(joins).toHaveSize(2)
 	
