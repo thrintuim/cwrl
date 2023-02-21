@@ -197,38 +197,38 @@ describe('When more than four players join', () => {
 	}
     })
     afterEach(async function() {
-	const closingBrowser = this.drivers.map((driver) => {
-	    return driver.quit()
-	})
-	await Promise.all(closingBrowser)
-	this.players = null
-	const url = `ws://${process.env.HOST || 'localhost'}:${process.env.PORT || '3000'}/reset`
-	const ws = new WebSocket(url)
-	ws.on('error', (err) => { })
-	// Wait for the websocket to send the handshake request
-	await sleep(500)
+        const closingBrowser = this.drivers.map((driver) => {
+            return driver.quit()
+        })
+        await Promise.all(closingBrowser)
+        this.players = null
+        const url = `ws://${process.env.HOST || 'localhost'}:${process.env.PORT || '3000'}/reset`
+        const ws = new WebSocket(url)
+        ws.on('error', (err) => { })
+        // Wait for the websocket to send the handshake request
+        await sleep(500)
     })
 
     it ('the first 4 players should have objects', async function () {
-	const player1 = this.players[0]
-	const msgs = await player1.getMovementHistory()
-	const playerJoin = new RegExp(/player \d+ has joined/)
-	const joins = msgs.filter(msg => playerJoin.test(msg))
-	expect(joins).toHaveSize(4)
-	const playerObjectPromises = [1, 2, 3, 4].map( playerNum => player1.getPlayerObject(playerNum) )
-	const playerObjects = await Promise.all(playerObjectPromises)
-	let playerNum = 1
-	for (const playerObject of playerObjects) {
-	    expect(playerObject).withContext(`player ${playerNum}`).toEqual(jasmine.anything())
-	    playerNum++
-	}
+        const player1 = this.players[0]
+        const msgs = await player1.getMovementHistory()
+        const playerJoin = new RegExp(/player \d+ has joined/)
+        const joins = msgs.filter(msg => playerJoin.test(msg))
+        expect(joins).toHaveSize(4)
+        const playerObjectPromises = [1, 2, 3, 4].map( playerNum => player1.getPlayerObject(playerNum) )
+        const playerObjects = await Promise.all(playerObjectPromises)
+        let playerNum = 1
+        for (const playerObject of playerObjects) {
+            expect(playerObject).withContext(`player ${playerNum}`).toEqual(jasmine.anything())
+            playerNum++
+        }
     })
     it ('the other players should be marked as observers', async function () {
-	const player1 = this.players[0]
-	const msgs = await player1.getMovementHistory()
-	const observerJoin = new RegExp(/observer \d+ has joined/)
-	const joins = msgs.filter(msg => observerJoin.test(msg))
-	expect(joins).toHaveSize(2)
-	
+        const player1 = this.players[0]
+        const msgs = await player1.getMovementHistory()
+        const observerJoin = new RegExp(/observer \d+ has joined/)
+        const joins = msgs.filter(msg => observerJoin.test(msg))
+        expect(joins).toHaveSize(2)
+        
     })
 })
