@@ -10,6 +10,7 @@ const app = express()
 app.use(express.static('../cwrl-client/build'))
 
 const gb = new GameBoard({width:100, height: 100})
+const maxPlayers = gb.entryPoints.length
 
 
 const server = app.listen('3000')
@@ -20,6 +21,12 @@ const ms = new MessageServer()
 gss.on('connection', function (ws) {
     // need to handle the case where a player has dropped
     //  and someone will fill their place.
+    ws.on('close', function () {
+        gss.players.delete(this)
+    })
+    ws.on('error', function (stuff) {
+    })
+    if (this.players.size < maxPlayers) {
     this.players.add(ws)
     ws.player = this.players.size
     const existingPlayerObject = gb.boardObjects.filter((obj) => obj.player === ws.player)
@@ -34,11 +41,10 @@ gss.on('connection', function (ws) {
         ms.addMessage(`player ${this.player} object moved to (${objUpdate.x}, ${objUpdate.y})`)
         ms.broadcast()
     })
-    ws.on('close', function () {
-        gss.players.delete(this)
-    })
-    ws.on('error', function (stuff) {
-    })
+    }
+    else {
+	ws.close()
+    }
 })
 
 gss.on('error', function (stuff) {
