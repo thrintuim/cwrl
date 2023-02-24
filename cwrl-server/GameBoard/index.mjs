@@ -6,7 +6,7 @@ class GameBoard {
         this.width = dimensions.width
         this.height = dimensions.height
         this.boardObjects = []
-        this.entryPoints = [{x:50, y:0}, {x:50, y:100}]
+        this.entryPoints = [{x:50, y:0}, {x:50, y:100}, {x: 0, y: 50}, {x: 100, y: 50}]
     }
 
     moveObject (gameObject, data) {
