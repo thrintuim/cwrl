@@ -224,6 +224,9 @@ describe('When more than four players join', () => {
         }
     })
     it ('the other players should be marked as observers', async function () {
+	/* tested for observers being added but
+	     not for any of their behaviors or
+	     available functionality */
         const player1 = this.players[0]
         const msgs = await player1.getMovementHistory()
         const observerJoin = new RegExp(/observer \d+ has joined/)

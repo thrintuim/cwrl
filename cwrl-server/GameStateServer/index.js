@@ -6,6 +6,7 @@ class GameStateServer extends WebSocketServer {
     constructor() {
         super({noServer: true})
         this.players = new Set()
+	this.observers = new Set()
         this.path = "/game"      
     }
 

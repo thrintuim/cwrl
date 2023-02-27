@@ -43,7 +43,10 @@ gss.on('connection', function (ws) {
         })
     }
     else {
-	    ws.close()
+	this.observers.add(ws)
+	ws.observer = this.players.size
+	ms.addMessage(`observer ${ws.observer} has joined`)
+	ms.broadcast()
     }
 })
 
