@@ -4,15 +4,15 @@ class CWRL {
     /**
      * Class representing the complete user facing CWRL application.
      * 
-     * @param {WebDriver} driver
+     * @param {WebDriver} webDriver
      */
-    constructor (driver) {
+    constructor (webDriver) {
         const port = process.env.PORT || 3000
         const host = process.env.HOST || 'localhost'
         this.url = `http://${host}:${port}`
-        this.driver = driver
+        this.webDriver = webDriver
         this.pageTitle = 'CWRL'
-        this.driver.manage().setTimeouts({ implicit: 3000 })
+        this.webDriver.manage().setTimeouts({ implicit: 3000 })
     }
 
     /**
@@ -21,8 +21,8 @@ class CWRL {
      * @returns {Promise<bool>}
      */
     async navigateToCWRL() {
-        await this.driver.get(this.url)
-        const title = await this.driver.getTitle()
+        await this.webDriver.get(this.url)
+        const title = await this.webDriver.getTitle()
         if (this.pageTitle !== title) {
             throw `Page title "${title}" doesn't match with expected title of "${this.pageTitle}"`
         }
@@ -40,7 +40,7 @@ class CWRL {
     async moveObject(direction) {
 	let el = null
         try {
-            el = await this.driver.findElement(By.id(`move${direction}`))
+            el = await this.webDriver.findElement(By.id(`move${direction}`))
         }
         catch (error) {
             return undefined
@@ -58,7 +58,7 @@ class CWRL {
     async getMovementHistory() {
 	    let els = null
         try {
-            els = await this.driver.findElements(By.css("#movementHistory p"))
+            els = await this.webDriver.findElements(By.css("#movementHistory p"))
         }
         catch (error) {
             return undefined
@@ -76,11 +76,37 @@ class CWRL {
     async getPlayerObject(playerNumber) {
 	let el = null
         try {
-            el = await this.driver.findElement(By.id(`player${playerNumber}`))
+            el = await this.webDriver.findElement(By.id(`player${playerNumber}`))
         } catch (error) {
             return undefined
         }
         return el
+    }
+
+    /**
+     * Determines the player number or observe number from the h1
+     * 
+     * expect the h1 to be structured like
+     *   CWRL - [player type] [player number]
+     */
+    async getCurrentUser() {
+        const h1 = await this.webDriver.findElement(By.css("h1")).catch((err) => undefined)
+        if (h1) {
+            const userTypeAndNumber = /CWRL - ([^ ]+) (\d+)/
+            const h1text = await h1.getText()
+            const result = userTypeAndNumber.exec(h1text)
+            if (result) {
+                this.userType = result[1]
+                this.userNumber = result[2]
+                return {
+                    userType: this.userType,
+                    userNumber: this.userNumber
+                }
+            }
+            else {
+                return undefined
+            }
+        }
     }
 }
 
