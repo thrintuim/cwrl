@@ -84,7 +84,7 @@ class CWRL {
     }
 
     /**
-     * Determines the player number or observe number from the h1
+     * Determines the player number or observer number from the h1
      * 
      * expect the h1 to be structured like
      *   CWRL - [player type] [player number]
