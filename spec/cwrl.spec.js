@@ -78,6 +78,14 @@ describe('when a player joins the game', () => {
         expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 1 has joined at (50, 0)')
     })
 
+    it('player 1 should be able to identify themselves', async function () {
+        await this.player1.navigateToCWRL()
+        const user = await this.player1.getCurrentUser()
+        expect(user).toBeDefined()
+        expect(user.userType).toBe("player")
+        expect(user.userNumber).toBe("1")
+    })
+
     it('each player board should have 2 objects when player 2 joins', async function () {
         await this.player1.navigateToCWRL()
         await this.player2.navigateToCWRL()
@@ -104,6 +112,15 @@ describe('when a player joins the game', () => {
             expect(player2history[0]).toBe('player 1 has joined at (50, 0)')
             expect(player2history[1]).toBe('player 2 has joined at (50, 100)')
         }
+    })
+    
+    it('player 2 should be able to identify themselves', async function () {
+        await this.player1.navigateToCWRL()
+        await this.player2.navigateToCWRL()
+        const user2 = await this.player2.getCurrentUser()
+        expect(user2).toBeDefined()
+        expect(user2.userType).toBe("player")
+        expect(user2.userNumber).toBe("2")
     })
 })
 
