@@ -5,7 +5,7 @@
     "jasmine": "^4.5.0",
     "selenium": "^2.20.0",
     "selenium-webdriver": "^4.7.0",
-    "webdriver": "^7.27.0"
+    "webdriver": "^8.23.1"
   },
   "scripts": {
     "test": "jasmine"
