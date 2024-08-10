@@ -8,8 +8,8 @@ function sleep(t) {
     return new Promise((resolve) => setTimeout(resolve, t))
 }
 
-const fo = new firefox.Options().headless()
-const co = new chrome.Options().headless()
+const fo = new firefox.Options()
+const co = new chrome.Options()
 if (process.env.ENV_SPEED === "SLOW") {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000
 }
@@ -21,13 +21,13 @@ if (process.env.ENV_SPEED === "SLOW") {
 function setUpDriversAndPlayers() {
     this.driver1 = new Builder()
         .forBrowser(Browser.CHROME)
-        .setFirefoxOptions(fo)
-        .setChromeOptions()
+        .setFirefoxOptions(fo.addArguments('--headless=new'))
+        .setChromeOptions(co.addArguments('--headless=new'))
 	.build()
     this.driver2 = new Builder()
         .forBrowser(Browser.CHROME)
-        .setFirefoxOptions(fo)
-        .setChromeOptions()
+        .setFirefoxOptions(fo.addArguments('--headless=new'))
+        .setChromeOptions(co.addArguments('--headless=new'))
         .build()
     this.player1 = new CWRL(this.driver1)
     this.player2 = new CWRL(this.driver2)
@@ -202,8 +202,8 @@ describe('When more than four players join', () => {
 	this.drivers = [1,2,3,4,5,6].map(() => {
 	    return new Builder()
 		.forBrowser(Browser.CHROME)
-		.setFirefoxOptions(fo)
-		.setChromeOptions()
+		.setFirefoxOptions(fo.addArguments('--headless=new'))
+		.setChromeOptions(co.addArguments('--headless=new'))
 		.build()
 	})
 	this.players = this.drivers.map((driver) => {
