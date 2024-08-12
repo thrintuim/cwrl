@@ -12,9 +12,10 @@ class CWRL extends React.Component {
 			// 	without server connection
 			gameObjects: props.objects ? props.objects : []
 		}
-	this.stateSync = {
-	    gameObjects: this.state.gameObjects
-	}
+		this.serverConnection = props.serverConnection
+		this.stateSync = {
+			gameObjects: this.state.gameObjects
+		}
 		this.movementHandlers = {
 			left: this.handleMove.bind(this, "left"),
 			right: this.handleMove.bind(this, "right"),
@@ -24,7 +25,6 @@ class CWRL extends React.Component {
     }
 
 	componentDidMount() {
-		this.serverConnection = new WebSocket(`ws://${window.location.host}/game`)
 		this.serverConnection.addEventListener('message', this.updateObject.bind(this))
 	}
 	componentWillUnmount() {
@@ -37,13 +37,15 @@ class CWRL extends React.Component {
 	 */
 	updateObject(evt) {
 		const objectData = JSON.parse(evt.data)
+		// setting initial board state
 	    if (Array.isArray(objectData)) {
-		this.stateSync.gameObjects = objectData
+			this.stateSync.gameObjects = objectData
 			this.setState({
 				gameObjects: this.stateSync.gameObjects
 			})
 			return true
 		}
+		// updating a specific player object on the board
 		const findPlayerObject = this.stateSync.gameObjects.filter((el) => el.player === objectData.player)
 		const toUpdate = findPlayerObject.length ? {} : findPlayerObject[0]
 		const toLeave = this.stateSync.gameObjects.filter((el) => el.player !== objectData.player)
@@ -74,8 +76,8 @@ class CWRL extends React.Component {
 				break
 		}
 		const toSend = JSON.stringify(activeObj)
-	this.serverConnection.send(toSend)
-	this.stateSync.gameObjects = [activeObj, ...inactiveObjects]
+		this.serverConnection.send(toSend)
+		this.stateSync.gameObjects = [activeObj, ...inactiveObjects]
 		this.setState({
 			gameObjects: this.stateSync.gameObjects
 		})
