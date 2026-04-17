@@ -1,5 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
-import { act } from 'react-dom/test-utils'
+import { act } from 'react'
 import Messages from './Messages'
 import { WebSocketServer } from 'ws'
 

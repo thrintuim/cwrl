@@ -56,7 +56,7 @@ class Messages extends React.Component {
 	 * 
 	 */
 	componentWillUnmount() {
-		if (this.connection) {
+		if (this.connection.readyState === 1) {
 			this.connection.close()
 		}
 	}
