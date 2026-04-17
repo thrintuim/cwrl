@@ -1,32 +1,26 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen , waitFor} from '@testing-library/react';
 import CWRL from './CWRL';
-import WebSocket from 'ws';
+import WS from 'jest-websocket-mock'
 
-jest.mock('ws')
+let server
+const HOST = "ws://localhost:1234/game"
 
-let mockConnection
 beforeEach (() => {
-  mockConnection = new WebSocket()
+  server = new WS(HOST)
 })
 afterEach(() => {
-  jest.resetAllMocks()
+  server.close()
 })
 
 test('renders CWRL app without error', () => {
   function renderCWRL() {
-    render(<CWRL serverConnection={mockConnection} />);
+    render(<CWRL serverConnection={HOST} />);
   }
   expect(renderCWRL).not.toThrow()
 });
 
 test('player role and number is present', async () => {
 
-  let eventHandler= [];
-  // TO DO: Need to move WebSocket to App and pass values to CWRL
-  mockConnection.addEventListener.mockImplementation((event, handler) => {
-    eventHandler[event] = handler;
-  });
-  mockConnection.close.mockImplementation(() => {})
   // expected player data
   let data = [{
     active: true,
@@ -40,8 +34,31 @@ test('player role and number is present', async () => {
     x: 0,
     y: 50
   }]
-  render(<CWRL serverConnection={mockConnection} />)
-  mockConnection.emit('message', JSON.stringify(data))
+  render(<CWRL serverConnection={HOST} />)
+  await server.connected
+  server.send(JSON.stringify(data))
   // CWRL - (player|observer) \d+
-  expect(await screen.findByText('player 1')).toBeInTheDocument()
+  await waitFor(() => expect(screen.getByText(/player 1/)).toBeInTheDocument() )
+})
+
+test('when the user has no active element they are noted as an observer', async () => {
+
+  // expected player data
+  let data = [{
+    active: false,
+    player: 1,
+    x: 50,
+    y: 0
+  },
+  {
+    active: false,
+    player: 2,
+    x: 0,
+    y: 50
+  }]
+  render(<CWRL serverConnection={HOST} />)
+  await server.connected
+  server.send(JSON.stringify(data))
+  // CWRL - (player|observer) \d+
+  await waitFor(() => expect(screen.getByText(/observer/)).toBeInTheDocument() )
 })
