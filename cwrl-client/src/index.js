@@ -7,7 +7,7 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <CWRL />
+    <CWRL serverConnection={`ws://${window.location.host}/game`} />
   </React.StrictMode>
 );
 

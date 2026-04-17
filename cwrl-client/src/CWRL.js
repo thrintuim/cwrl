@@ -12,7 +12,6 @@ class CWRL extends React.Component {
 			// 	without server connection
 			gameObjects: props.objects ? props.objects : []
 		}
-		this.serverConnection = props.serverConnection
 		this.stateSync = {
 			gameObjects: this.state.gameObjects
 		}
@@ -22,9 +21,11 @@ class CWRL extends React.Component {
 			up: this.handleMove.bind(this, "up"),
 			down: this.handleMove.bind(this, "down")
 		}
+		this.connection = props.serverConnection
     }
 
 	componentDidMount() {
+		this.serverConnection = new WebSocket(this.connection)
 		this.serverConnection.addEventListener('message', this.updateObject.bind(this))
 	}
 	componentWillUnmount() {
@@ -54,6 +55,7 @@ class CWRL extends React.Component {
 		this.setState({
 			gameObjects: this.stateSync.gameObjects
 		})
+		
 	}
 
     handleMove(direction) {
@@ -99,24 +101,39 @@ class CWRL extends React.Component {
 		)
     }
 
+	showPlayers() {
+		if (this.state.gameObjects.length > 0) {
+			if (this.state.gameObjects.filter( (el) => el.active ).length > 0) {
+				return `player ${this.state.gameObjects.filter( (el) => el.active )[0].player}`
+				
+			}
+			else {
+				return 'observer'
+			}
+		}
+		else {
+			return 'no game objects'
+		}
+	}
+
     render(props) {
 		return (
 			<>
-			<header>
-				<h1>CWRL</h1>
-			</header>
-			<main>
-			    <Board>
-					{this.state.gameObjects.map(this.addObjects)}
-				</Board>
-			    <Controls handlers={this.movementHandlers}/>
-			    <Messages
-					title={"Movement History"}
-					level={2}
-					id={"movementHistory"}
-					connection={`ws://${window.location.host}/moveLog`}
-			    />
-			</main>
+				<header>
+					<h1>{`CWRL - ${this.showPlayers()}`}</h1>
+				</header>
+				<main>
+					<Board>
+						{this.state.gameObjects.map(this.addObjects)}
+					</Board>
+					<Controls handlers={this.movementHandlers}/>
+					<Messages
+						title={"Movement History"}
+						level={2}
+						id={"movementHistory"}
+						connection={`ws://${window.location.host}/moveLog`}
+					/>
+				</main>
 			</>
 		);
     }
