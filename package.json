@@ -1,11 +1,9 @@
 {
   "dependencies": {
-    "dotenv": "^16.0.3",
-    "eslint": "^8.29.0",
-    "jasmine": "^4.5.0",
-    "selenium": "^2.20.0",
-    "selenium-webdriver": "^4.7.0",
-    "webdriver": "^8.23.1"
+    "dotenv": "^17.4.2",
+    "eslint": "^10.2.1",
+    "jasmine": "^6.2.0",
+    "selenium-webdriver": "^4.43.0"
   },
   "scripts": {
     "test": "jasmine"
