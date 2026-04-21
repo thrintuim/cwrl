@@ -1,5 +1,6 @@
-const { Builder, Browser, By, Key, until } = require('selenium-webdriver');
+const { Builder, Browser, By, Key, until, WebDriver } = require('selenium-webdriver');
 const { WebSocket } = require('ws')
+const fs = require('fs')
 const firefox = require('selenium-webdriver/firefox');
 const chrome = require('selenium-webdriver/chrome');
 const CWRL = require('./cwrl-app');
@@ -8,10 +9,40 @@ function sleep(t) {
     return new Promise((resolve) => setTimeout(resolve, t))
 }
 
+function serviceMemo() {
+	let service = new firefox
+		.ServiceBuilder(process.env.GECKOPATH)
+	return function () { return service }
+}
+
+function buildDriver() {
+	/*
+	In Termux ran into a problem where Selenium-Manager
+	fails to run. As a backup we're trying to start Firefox
+	with a specific path to the driver stored in GECKOPATH.
+	*/
+	let driver = null
+	try {
+		driver = new Builder()
+            .forBrowser(Browser.CHROME)            
+            .setChromeOptions(co.addArguments('--headless=new'))
+            .build()
+	}
+	catch (e) {
+		let service = serviceMemo()
+		driver = new Builder()
+            .forBrowser(Browser.FIREFOX)
+            .setFirefoxService(service())
+            .setFirefoxOptions(fo.addArguments('--headless=new'))
+            .build()
+	}
+	return driver
+}
+
 const fo = new firefox.Options()
 const co = new chrome.Options()
 if (process.env.ENV_SPEED === "SLOW") {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000
+    // jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000
 }
 
 /**
@@ -19,16 +50,9 @@ if (process.env.ENV_SPEED === "SLOW") {
  *  or passed directly to beforeEach
  */
 function setUpDriversAndPlayers() {
-    this.driver1 = new Builder()
-        .forBrowser(Browser.CHROME)
-        .setFirefoxOptions(fo.addArguments('--headless=new'))
-        .setChromeOptions(co.addArguments('--headless=new'))
-	.build()
-    this.driver2 = new Builder()
-        .forBrowser(Browser.CHROME)
-        .setFirefoxOptions(fo.addArguments('--headless=new'))
-        .setChromeOptions(co.addArguments('--headless=new'))
-        .build()
+	this.driver1 = buildDriver()
+	this.driver2 = buildDriver()
+    
     this.player1 = new CWRL(this.driver1)
     this.player2 = new CWRL(this.driver2)
 }
@@ -200,11 +224,7 @@ describe('when a player moves their object the movement history for each player'
 describe('When more than four players join', () => {
     beforeEach(async function() {
 	this.drivers = [1,2,3,4,5,6].map(() => {
-	    return new Builder()
-		.forBrowser(Browser.CHROME)
-		.setFirefoxOptions(fo.addArguments('--headless=new'))
-		.setChromeOptions(co.addArguments('--headless=new'))
-		.build()
+	    return buildDriver()
 	})
 	this.players = this.drivers.map((driver) => {
 	    return new CWRL(driver)
