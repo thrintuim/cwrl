@@ -223,15 +223,21 @@ describe('when a player moves their object the movement history for each player'
 
 describe('When more than four players join', () => {
     beforeEach(async function() {
-	this.drivers = [1,2,3,4,5,6].map(() => {
-	    return buildDriver()
-	})
-	this.players = this.drivers.map((driver) => {
-	    return new CWRL(driver)
-	})
-	for (const player of this.players) {
-	    await player.navigateToCWRL()
-	}
+        this.drivers = [1,2,3,4,5,6].map(() => {
+            return buildDriver()
+        })
+        this.players = this.drivers.slice(0,4).map((driver) => {
+            return new CWRL(driver)
+        })
+        this.observers = this.drivers.slice(4).map((driver) => {
+            return new CWRL(driver)
+        })
+        for (const player of this.players) {
+            await player.navigateToCWRL()
+        }
+        for (const observer of this.observers) {
+            await observer.navigateToCWRL()
+        }
     })
     afterEach(async function() {
         const closingBrowser = this.drivers.map((driver) => {
@@ -239,6 +245,7 @@ describe('When more than four players join', () => {
         })
         await Promise.all(closingBrowser)
         this.players = null
+        this.observers = null
         const url = `ws://${process.env.HOST || 'localhost'}:${process.env.PORT || '3000'}/reset`
         const ws = new WebSocket(url)
         ws.on('error', (err) => { })
@@ -261,7 +268,7 @@ describe('When more than four players join', () => {
         }
     })
     it ('the other players should be marked as observers', async function () {
-	/* tested for observers being added but
+	    /* tested for observers being added but
 	     not for any of their behaviors or
 	     available functionality */
         const player1 = this.players[0]
@@ -269,6 +276,20 @@ describe('When more than four players join', () => {
         const observerJoin = new RegExp(/observer \d+ has joined/)
         const joins = msgs.filter(msg => observerJoin.test(msg))
         expect(joins).toHaveSize(2)
-        
+    })
+    it ('observers should see objects move in their views', async function () {
+	    /* tested for observers being added but
+	     not for any of their behaviors or
+	     available functionality */
+        const player1 = this.players[0]
+        await player1.moveObject("Down")
+        let observer1Object1 = await this.observers[0].getPlayerObject(1)
+        let observer2Object1 = await this.observers[1].getPlayerObject(1)
+        expect(observer1Object1).toEqual(jasmine.anything())
+        expect(observer2Object1).toEqual(jasmine.anything())
+        expect(await observer1Object1.getAttribute('x')).toBe(`${currentCoords.x}`)
+        expect(await observer1Object1.getAttribute('y')).toBe(`${currentCoords.y}`)
+        expect(await observer2Object1.getAttribute('x')).toBe(`${currentCoords.x}`)
+        expect(await observer2Object1.getAttribute('y')).toBe(`${currentCoords.y}`)
     })
 })
