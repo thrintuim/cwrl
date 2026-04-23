@@ -29,6 +29,21 @@ async function waitFor(func, interval, maxTime = 5000) {
     }
 }
 
+async function waitForMovementHistory(player, message) {
+    let result = await waitFor(
+        async () => {
+            (await player.getMovementHistory())
+                .slice()
+                .pop() === message
+        },
+        500,
+        1500
+    )
+    if (result) {
+        return result
+    }
+}
+
 function buildDriver() {
 	/*
 	In Termux ran into a problem where Selenium-Manager
@@ -170,15 +185,7 @@ describe('when a player moves their object the movement history for each player'
         await this.player1.navigateToCWRL()
         await this.player2.navigateToCWRL()
         await this.player1.moveObject("Down")
-        await waitFor(
-            async () => {
-                (await this.player1.getMovementHistory())
-                    .slice()
-                    .pop() === 'player 1 object moved to (50, 1)'
-            },
-            500,
-            1500
-        )
+        await waitForMovementHistory(this.player1, 'player 1 object moved to (50, 1)')
         expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 1 object moved to (50, 1)')
         expect((await this.player2.getMovementHistory()).slice().pop()).toBe('player 1 object moved to (50, 1)')
     })
@@ -188,15 +195,7 @@ describe('when a player moves their object the movement history for each player'
         await this.player2.navigateToCWRL()
 
         await this.player2.moveObject("Up")
-        await waitFor(
-            async () => {
-                (await this.player1.getMovementHistory())
-                    .slice()
-                    .pop() === 'player 2 object moved to (50, 99)'
-            },
-            500,
-            1500
-        )
+        await waitForMovementHistory(this.player1, 'player 2 object moved to (50, 99)')
         expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 2 object moved to (50, 99)')
         expect((await this.player2.getMovementHistory()).slice().pop()).toBe('player 2 object moved to (50, 99)')
     })
@@ -316,9 +315,6 @@ describe('When more than four players join', () => {
         expect(observer2Object1).toEqual(jasmine.anything())
     })
     it ('observers should see objects move in their views', async function () {
-	    /* tested for observers being added but
-	     not for any of their behaviors or
-	     available functionality */
         const player1 = this.players[0]
         await player1.moveObject("Down")
         let observer1Object1 = await this.observers[0].getPlayerObject(1)
