@@ -3,18 +3,13 @@ import express from 'express'
 
 describe('GameStateServer update players', () => {
     beforeEach(function () {
-        const app = express()
-        this.server = app.listen('3000')
         this.player1 = jasmine.createSpyObj('MockWS', ['send'])
         this.player2 = jasmine.createSpyObj('MockWS', ['send'])
         this.player3 = jasmine.createSpyObj('MockWS', ['send'])
+        this.observer1 = jasmine.createSpyObj('MockWS', ['send'])
     })
-    afterEach(function () {
-        this.server.close()
-        this.server = null
-    })
-    it ('should call send method of each WebSocket in players array', function () {
-        const gss = new GameStateServer(this.server, "/things")
+    it ('should call send method of each WebSocket in players Set', function () {
+        const gss = new GameStateServer()
         gss.players.add(this.player1)
         gss.players.add(this.player2)
         gss.players.add(this.player3)
@@ -25,5 +20,14 @@ describe('GameStateServer update players', () => {
         expect(this.player1.send).toHaveBeenCalledWith(activeObject)
         expect(this.player2.send).toHaveBeenCalledWith(inactiveObject)
         expect(this.player3.send).toHaveBeenCalledWith(inactiveObject)
+    })
+    it ('should call send method of each WebSocket in observers Set', function () {
+        const gss = new GameStateServer()
+        gss.players.add(this.player1)
+        gss.observers.add(this.observer1)
+        const obj = {things: "stuff"}
+        const inactiveObject = JSON.stringify(Object.assign({}, obj, {active: false}))
+        gss.updatePlayers(this.player1, obj)
+        expect(this.observer1.send).toHaveBeenCalledWith(inactiveObject)
     })
 })
