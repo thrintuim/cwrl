@@ -324,4 +324,17 @@ describe('When more than four players join', () => {
         expect(await observer2Object1.getAttribute('x')).toBe(`${50}`)
         expect(await observer2Object1.getAttribute('y')).toBe(`${1}`)
     })
+    it ('observers should receive all messages players receive', async function () {
+	    /* tested for observers being added but
+	     not for any of their behaviors or
+	     available functionality */
+        const player1 = this.players[0]
+        await player1.moveObject("Down")
+        await waitForMovementHistory(player1, 'player 1 object moved to (50, 1)')
+        let player1MovementHistory = await player1.getMovementHistory()
+        let observer1MovementHistory = await this.observers[0].getMovementHistory()
+        let observer2MovementHistory = await this.observers[1].getMovementHistory()
+        expect(observer1MovementHistory).toEqual(player1MovementHistory)
+        expect(observer2MovementHistory).toEqual(player1MovementHistory)
+    })
 })
