@@ -309,6 +309,12 @@ describe('When more than four players join', () => {
         const joins = msgs.filter(msg => observerJoin.test(msg))
         expect(joins).toHaveSize(2)
     })
+    it ('observers should see objects in their views before anyone moves', async function () {
+	    let observer1Object1 = await this.observers[0].getPlayerObject(1)
+        let observer2Object1 = await this.observers[1].getPlayerObject(1)
+        expect(observer1Object1).toEqual(jasmine.anything())
+        expect(observer2Object1).toEqual(jasmine.anything())
+    })
     it ('observers should see objects move in their views', async function () {
 	    /* tested for observers being added but
 	     not for any of their behaviors or
