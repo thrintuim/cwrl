@@ -15,6 +15,20 @@ function serviceMemo() {
 	return function () { return service }
 }
 
+async function waitFor(func, interval, maxTime = 5000) {
+    totalTime = 0
+    while (!func() || totalTime >= maxTime) {
+        await sleep(interval)
+        totalTime += interval
+    }
+    if (totalTime >= maxTime) {
+        reject("Reached max time")
+    }
+    else {
+        return func()
+    }
+}
+
 function buildDriver() {
 	/*
 	In Termux ran into a problem where Selenium-Manager
@@ -156,6 +170,15 @@ describe('when a player moves their object the movement history for each player'
         await this.player1.navigateToCWRL()
         await this.player2.navigateToCWRL()
         await this.player1.moveObject("Down")
+        await waitFor(
+            async () => {
+                (await this.player1.getMovementHistory())
+                    .slice()
+                    .pop() === 'player 1 object moved to (50, 1)'
+            },
+            500,
+            1500
+        )
         expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 1 object moved to (50, 1)')
         expect((await this.player2.getMovementHistory()).slice().pop()).toBe('player 1 object moved to (50, 1)')
     })
@@ -165,6 +188,15 @@ describe('when a player moves their object the movement history for each player'
         await this.player2.navigateToCWRL()
 
         await this.player2.moveObject("Up")
+        await waitFor(
+            async () => {
+                (await this.player1.getMovementHistory())
+                    .slice()
+                    .pop() === 'player 2 object moved to (50, 99)'
+            },
+            500,
+            1500
+        )
         expect((await this.player1.getMovementHistory()).slice().pop()).toBe('player 2 object moved to (50, 99)')
         expect((await this.player2.getMovementHistory()).slice().pop()).toBe('player 2 object moved to (50, 99)')
     })
