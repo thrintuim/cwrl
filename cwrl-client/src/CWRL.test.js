@@ -42,7 +42,6 @@ test('player role and number is present', async () => {
 })
 
 test('when the user has no active element they are noted as an observer', async () => {
-
   // expected player data
   let data = [{
     active: false,
@@ -60,5 +59,26 @@ test('when the user has no active element they are noted as an observer', async 
   await server.connected
   server.send(JSON.stringify(data))
   // CWRL - (player|observer) \d+
-  await waitFor(() => expect(screen.getByText(/observer/)).toBeInTheDocument() )
+  await waitFor(() => expect(screen.getByText(/observer/)).toBeInTheDocument())
+})
+
+test('when the user has no active element player objects are still visible to them', async () => {
+  // expected player data
+  let data = [{
+    active: false,
+    player: 1,
+    x: 50,
+    y: 0
+  },
+  {
+    active: false,
+    player: 2,
+    x: 0,
+    y: 50
+  }]
+  render(<CWRL serverConnection={HOST} />)
+  await server.connected
+  server.send(JSON.stringify(data))
+  await waitFor(() => expect(screen.getByTestId('player-object-1')).toBeInTheDocument())
+  await waitFor(() => expect(screen.getByTestId('player-object-2')).toBeInTheDocument())
 })

@@ -97,6 +97,7 @@ class CWRL extends React.Component {
 				fill="none"
 				strokeWidth="0.5"
 				stroke="black"
+				data-testid={`player-object-${index + 1}`}
 			/>
 		)
     }
