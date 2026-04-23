@@ -30,6 +30,7 @@ class GameStateServer extends WebSocketServer {
                 ws.send(stringifiedObj)
             }
         })
+        this.observers.forEach(ws => ws.send(stringifiedObj))
     }
 }
 
