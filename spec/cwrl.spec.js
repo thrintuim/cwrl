@@ -71,7 +71,7 @@ function buildDriver() {
 const fo = new firefox.Options()
 const co = new chrome.Options()
 if (process.env.ENV_SPEED === "SLOW") {
-    // jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000
 }
 
 /**
