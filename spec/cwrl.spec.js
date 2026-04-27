@@ -9,11 +9,20 @@ function sleep(t) {
     return new Promise((resolve) => setTimeout(resolve, t))
 }
 
-function serviceMemo() {
+function firefoxServiceMemo() {
 	let service = new firefox
 		.ServiceBuilder(process.env.GECKOPATH)
 	return function () { return service }
 }
+function chromeServiceMemo() {
+	let service = new chrome
+		.ServiceBuilder()
+    service.enableChromeLogging()
+	return function () { return service }
+}
+
+const FIREFOX_SERVICE = firefoxServiceMemo()
+const CHROME_SERVICE = chromeServiceMemo()
 
 async function waitFor(func, interval, maxTime = 5000) {
     totalTime = 0
@@ -53,15 +62,15 @@ function buildDriver() {
 	let driver = null
 	try {
 		driver = new Builder()
-            .forBrowser(Browser.CHROME)            
+            .forBrowser(Browser.CHROME)   
+            .setChromeService(CHROME_SERVICE())         
             .setChromeOptions(co.addArguments('--headless=new'))
             .build()
 	}
 	catch (e) {
-		let service = serviceMemo()
 		driver = new Builder()
             .forBrowser(Browser.FIREFOX)
-            .setFirefoxService(service())
+            .setFirefoxService(FIREFOX_SERVICE())
             .setFirefoxOptions(fo.addArguments('--headless=new'))
             .build()
 	}
