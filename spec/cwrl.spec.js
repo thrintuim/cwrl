@@ -175,6 +175,21 @@ describe('when a player joins the game', () => {
         expect(user2.userType).toBe("player")
         expect(user2.userNumber).toBe("2")
     })
+
+    it('the board state should be the same for all players', async function () {
+    	await this.player1.navigateToCWRL()
+    	await this.player1.moveObject("Down")
+    	await this.player2.navigateToCWRL()
+    	await waitForMovementHistory(this.player1, 'player 2 has joined at (50, 100)')
+    	let player1Object1 = await this.player1.getPlayerObject(1)
+    	let player2Object1 = await this.player2.getPlayerObject(1)
+    	expect(await player1Object1.getAttribute("x")).toEqual(await player2Object1.getAttribute("x"))
+    	expect(await player1Object1.getAttribute("y")).toEqual(await player2Object1.getAttribute("y"))
+    })
+
+    it('message history should be the same for all players', async function () {
+    	await this.player1.navigateToCWRL()
+    })
 })
 
 describe('when a player moves their object the movement history for each player', () => {
