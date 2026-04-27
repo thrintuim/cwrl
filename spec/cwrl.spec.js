@@ -189,6 +189,12 @@ describe('when a player joins the game', () => {
 
     it('message history should be the same for all players', async function () {
     	await this.player1.navigateToCWRL()
+        await this.player1.moveObject("Down")
+    	await this.player2.navigateToCWRL()
+    	await waitForMovementHistory(this.player1, 'player 2 has joined at (50, 100)')
+        let player1hist = await this.player1.getMovementHistory()
+        let player2hist = await this.player2.getMovementHistory()
+        expect(player2hist).toEqual(player1hist)
     })
 })
 
